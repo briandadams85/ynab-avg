@@ -18,4 +18,4 @@ A simple app to calculate the monthly average of your YNAB transactions.
 
 ## TODO
 
-- Export the results to a CSV file
+- ~~Export the results to a CSV file~~

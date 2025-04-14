@@ -70,15 +70,18 @@
         </div>
       </BCard>
 
-      <div class="mb-2">
-        <div class="position-relative">
+      <div class="mb-2 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+        <div class="position-relative flex-grow-1">
           <BFormInput
             v-model="searchQuery"
             placeholder="Search categories..."
-            class="mb-2 ps-5"
+            class="mb-0 ps-5"
           />
           <FontAwesomeIcon icon="search" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); color: #6c757d;" />
         </div>
+        <BButton variant="primary" @click="exportCSV" class="ms-md-2 mt-2 mt-md-0">
+          <FontAwesomeIcon icon="download" class="me-2" /> Export CSV
+        </BButton>
       </div>
 
       <BTable
@@ -139,8 +142,9 @@ import { useTheme } from './composables/useTheme';
 import { useBudget } from './composables/useBudget';
 import { BFormSelect, BSpinner, BCard, BTable, BFormInput, BButton, BNavbar, BNavbarBrand, BFormRadioGroup, BFormGroup } from 'bootstrap-vue-next';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faMoon, faSun, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+library.add(faDownload);
 
 library.add(faSearch, faMoon, faSun);
 
@@ -338,6 +342,47 @@ onMounted(async () => {
     fetchData();
   }
 });
+
+function exportCSV() {
+  // Get current visible table data and fields
+  const items = tableData.value;
+  const fields = tableFields.value;
+  if (!items.length) return;
+
+  // Prepare CSV header
+  const header = fields.map(f => f.label || f.key);
+
+  // Prepare CSV rows
+  const rows = items.map(item =>
+    fields.map(f => {
+      let val = item[f.key];
+      // Format as in table
+      if (['amount', 'previousAverage', 'currentTotal', 'previousTotal', 'change'].includes(f.key)) {
+        val = formatCurrency(val);
+        if (f.key === 'change' && val !== undefined) {
+          val = (item[f.key] > 0 ? '+' : '') + '$' + val;
+        } else if (val !== undefined) {
+          val = '$' + val;
+        }
+      } else if (f.key === 'percentage' && val !== undefined) {
+        val = (item[f.key] > 0 ? '+' : '') + Number(val).toFixed(1) + '%';
+      }
+      return typeof val === 'string' ? '"' + val.replace(/"/g, '""') + '"' : val;
+    })
+  );
+
+  // Combine header and rows
+  const csvContent = [header, ...rows].map(row => row.join(',')).join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `ynab-averages-export-${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 </script>
 
 <style>
