@@ -1,5 +1,21 @@
-# Vue 3 + Vite
+# YNAB Monthly Averages
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A simple app to calculate the monthly average of your YNAB transactions.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Setup
+
+1. Clone the repo
+2. Install dependencies: `npm install`
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Add your YNAB API key to the `.env` file
+4. Run the app: `npm run dev`
+
+## Features
+
+- Calculate monthly averages for your YNAB transactions
+- View the results in a table
+
+## TODO
+
+- Export the results to a CSV file

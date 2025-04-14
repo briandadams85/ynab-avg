@@ -22,9 +22,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.3",
-    "vite": "^6.2.0"
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^6.2.6"
   }
 }
