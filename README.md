@@ -1,3 +1,5 @@
+![YNAB Monthly Averages Icon](src-tauri/icons/Square310x310Logo.png)
+
 # YNAB Monthly Averages
 
 A simple app to calculate the monthly average of your YNAB transactions.
