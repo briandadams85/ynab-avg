@@ -10,37 +10,22 @@
       <div class="row g-2 mb-2">
         <div class="col-md-4">
           <BFormGroup label="Budget" label-for="budget-select">
-            <BFormSelect
-              id="budget-select"
-              v-model="selectedBudgetId"
-              @change="fetchData"
-              :options="budgetOptions"
-              class="mb-2 mb-md-0"
-            ></BFormSelect>
+            <BFormSelect id="budget-select" v-model="selectedBudgetId" @change="fetchData" :options="budgetOptions"
+              class="mb-2 mb-md-0"></BFormSelect>
           </BFormGroup>
         </div>
         <div class="col-md-4">
           <BFormGroup label="Year" label-for="year-select">
-            <BFormSelect
-              id="year-select"
-              v-model="selectedYear"
-              @change="fetchData"
-              :options="availableYears"
-              class="mb-2 mb-md-0"
-            ></BFormSelect>
+            <BFormSelect id="year-select" v-model="selectedYear" @change="fetchData" :options="availableYears"
+              class="mb-2 mb-md-0"></BFormSelect>
           </BFormGroup>
         </div>
         <div class="col-md-4">
           <BFormGroup label="View by" label-for="view-by-select">
-            <BFormSelect
-              id="view-by-select"
-              v-model="viewByGroup"
-              :options="[
-                { text: 'Category', value: false },
-                { text: 'Category Group', value: true }
-              ]"
-              class="mb-2 mb-md-0"
-            ></BFormSelect>
+            <BFormSelect id="view-by-select" v-model="viewByGroup" :options="[
+              { text: 'Category', value: false },
+              { text: 'Category Group', value: true }
+            ]" class="mb-2 mb-md-0"></BFormSelect>
           </BFormGroup>
         </div>
       </div>
@@ -72,26 +57,17 @@
 
       <div class="mb-2 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
         <div class="position-relative flex-grow-1">
-          <BFormInput
-            v-model="searchQuery"
-            placeholder="Search categories..."
-            class="mb-0 ps-5"
-          />
-          <FontAwesomeIcon icon="search" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); color: #6c757d;" />
+          <BFormInput v-model="searchQuery" placeholder="Search categories..." class="mb-0 ps-5" />
+          <FontAwesomeIcon icon="search" class="position-absolute"
+            style="left: 10px; top: 50%; transform: translateY(-50%); color: #6c757d;" />
         </div>
         <BButton variant="primary" @click="exportCSV" class="ms-md-2 mt-2 mt-md-0">
           <FontAwesomeIcon icon="download" class="me-2" /> Export CSV
         </BButton>
       </div>
 
-      <BTable
-        striped
-        hover
-        :items="tableData"
-        :fields="tableFields"
-        class="bg-white"
-        :sort-by="[{key: 'category', order: 'asc'}]"
-      >
+      <BTable striped hover :items="tableData" :fields="tableFields" class="bg-white"
+        :sort-by="[{ key: 'category', order: 'asc' }]">
         <template #cell(amount)="data">
           <span :class="{ 'changed-value': data.item.hasChanged }">
             ${{ formatCurrency(data.value) }}
@@ -121,11 +97,7 @@
       <footer class="mt-4 py-3 border-top">
         <div class="d-flex justify-content-between align-items-center">
           <small class="text-muted">YNAB Monthly Spending Averages</small>
-          <BButton 
-            variant="outline-secondary" 
-            @click="toggleTheme"
-            class="theme-toggle"
-          >
+          <BButton variant="outline-secondary" @click="toggleTheme" class="theme-toggle">
             <FontAwesomeIcon :icon="isDark ? 'sun' : 'moon'" />
             {{ isDark ? 'Light Mode' : 'Dark Mode' }}
           </BButton>
@@ -140,13 +112,12 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useSpendingAnalysis } from './composables/useSpendingAnalysis';
 import { useTheme } from './composables/useTheme';
 import { useBudget } from './composables/useBudget';
-import { BFormSelect, BSpinner, BCard, BTable, BFormInput, BButton, BNavbar, BNavbarBrand, BFormRadioGroup, BFormGroup } from 'bootstrap-vue-next';
+import { BFormSelect, BSpinner, BCard, BTable, BFormInput, BButton, BNavbar, BNavbarBrand, BFormGroup } from 'bootstrap-vue-next';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faMoon, faSun, faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-library.add(faDownload);
 
-library.add(faSearch, faMoon, faSun);
+library.add(faSearch, faMoon, faSun, faDownload);
 
 const {
   budgets,
@@ -233,8 +204,8 @@ const tableData = computed(() => {
 
       items = items.filter(item => {
         const category = item.category.toLowerCase();
-        return searchWords.every(word => 
-          category.split(/\s+/).some(categoryWord => 
+        return searchWords.every(word =>
+          category.split(/\s+/).some(categoryWord =>
             categoryWord.includes(word)
           )
         );
@@ -271,8 +242,8 @@ const tableData = computed(() => {
 
       items = items.filter(item => {
         const category = item.category.toLowerCase();
-        return searchWords.every(word => 
-          category.split(/\s+/).some(categoryWord => 
+        return searchWords.every(word =>
+          category.split(/\s+/).some(categoryWord =>
             categoryWord.includes(word)
           )
         );
@@ -336,14 +307,14 @@ onMounted(async () => {
       text: (currentYear - i).toString()
     })
   );
-  
+
   await fetchBudgets();
   if (selectedBudgetId.value) {
     fetchData();
   }
 });
 
-function exportCSV() {
+async function exportCSV() {
   // Get current visible table data and fields
   const items = tableData.value;
   const fields = tableFields.value;
@@ -357,32 +328,68 @@ function exportCSV() {
     fields.map(f => {
       let val = item[f.key];
       // Format as in table
-      if (['amount', 'previousAverage', 'currentTotal', 'previousTotal', 'change'].includes(f.key)) {
+      if (["amount", "previousAverage", "currentTotal", "previousTotal", "change"].includes(f.key)) {
         val = formatCurrency(val);
-        if (f.key === 'change' && val !== undefined) {
-          val = (item[f.key] > 0 ? '+' : '') + '$' + val;
+        if (f.key === "change" && val !== undefined) {
+          val = (item[f.key] > 0 ? "+" : "") + "$" + val;
         } else if (val !== undefined) {
-          val = '$' + val;
+          val = "$" + val;
         }
-      } else if (f.key === 'percentage' && val !== undefined) {
-        val = (item[f.key] > 0 ? '+' : '') + Number(val).toFixed(1) + '%';
+      } else if (f.key === "percentage" && val !== undefined) {
+        val = (item[f.key] > 0 ? "+" : "") + Number(val).toFixed(1) + "%";
       }
-      return typeof val === 'string' ? '"' + val.replace(/"/g, '""') + '"' : val;
+      return typeof val === "string" ? '"' + val.replace(/"/g, '""') + '"' : val;
     })
   );
 
   // Combine header and rows
-  const csvContent = [header, ...rows].map(row => row.join(',')).join('\r\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `ynab-averages-export-${new Date().toISOString().slice(0,10)}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  const csvContent = [header, ...rows].map(row => row.join(",")).join("\r\n");
+
+  // Detect if running in Tauri
+  // Use Tauri's own env variable if available, fallback to window.__TAURI__
+  const isTauri = typeof window !== 'undefined' && (
+    (typeof window.__TAURI__ !== 'undefined') ||
+    (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.TAURI)
+  );
+  console.log('[ExportCSV] isTauri:', isTauri);
+
+  if (isTauri) {
+    // Use Tauri APIs for native file save
+    try {
+      const { save } = await import('@tauri-apps/plugin-dialog');
+      const { writeTextFile } = await import('@tauri-apps/plugin-fs');
+      const suggestedName = `ynab-averages-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      console.log('[ExportCSV] About to open Tauri save dialog...');
+      const filePath = await save({
+        filters: [{ name: 'CSV', extensions: ['csv'] }],
+        defaultPath: suggestedName,
+        title: 'Save CSV Export'
+      });
+      console.log('[ExportCSV] File path selected:', filePath);
+      if (filePath) {
+        await writeTextFile(filePath, csvContent);
+        console.log('[ExportCSV] File written successfully!');
+      } else {
+        alert('CSV export cancelled.');
+      }
+    } catch (e) {
+      console.error('[ExportCSV] Error using Tauri APIs:', e);
+      alert('Failed to save CSV file.');
+    }
+  } else {
+    // Browser download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `ynab-averages-export-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 }
+
 </script>
 
 <style>
@@ -424,7 +431,7 @@ function exportCSV() {
   color: var(--bs-light);
 }
 
-[data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) {
+[data-bs-theme="dark"] .table-striped>tbody>tr:nth-of-type(odd) {
   background-color: var(--bs-gray-900);
 }
 
@@ -438,4 +445,4 @@ function exportCSV() {
 [data-bs-theme="dark"] .changed-value {
   background-color: #664d03;
 }
-</style> 
+</style>
